@@ -5,7 +5,7 @@ export default async function getDistanceF(
     address: string,
     addressUser: string,
 ): Promise<number | null> {
-    Geocode.setApiKey("AIzaSyCxs0m6LclVWmc1cfrePk-dt41lqJzYrzQ");
+    Geocode.setApiKey("API_KEY");
 
     Geocode.setLanguage("pt-br");
 
