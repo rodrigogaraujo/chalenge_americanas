@@ -19,6 +19,7 @@ interface User {
 }
 
 const ListStores: React.FC = (props: any) => {
+    console.log(props);
     const cep = props.location.pathname;
     const textReplace = "/stores/";
     const [stories, setStories] = useState<User[] | null>([]);
@@ -30,7 +31,9 @@ const ListStores: React.FC = (props: any) => {
         const promises = storiesBefore.map(async (storie) => {
             if (storie.is_store) {
                 storie.distance = await getDistanceF(
-                    cep.substring(cep.indexOf("/") + textReplace.length),
+                    cep.substring(
+                        cep.indexOf(textReplace) + textReplace.length,
+                    ),
                     storie.address,
                 );
                 return storie;
