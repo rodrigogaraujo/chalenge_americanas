@@ -118,8 +118,8 @@ export const Content = styled.div<ContentProps>`
         ul {
             display: flex;
             flex: 1;
-            justify-content: space-between;
             flex-wrap: wrap;
+
             li {
                 a {
                     text-decoration: none;
@@ -128,6 +128,9 @@ export const Content = styled.div<ContentProps>`
                 display: flex;
                 flex-basis: calc(33% - 10px);
                 flex-direction: column;
+                + li {
+                    margin-left: 20px;
+                }
                 min-width: 300px;
                 margin-bottom: 20px;
                 padding: 20px;

@@ -1,17 +1,30 @@
 import React from "react";
 import { FiLogIn } from "react-icons/fi";
 import { Link, useHistory } from "react-router-dom";
+import { Form } from "@unform/web";
 
+import { useAuth } from "../../hooks/AuthContext";
 import { Container, Content, Background } from "./styles";
+import Input from "../../components/Input";
 
 import logoImg from "../../assets/logo.png";
-import pictureFoodImg from "../../assets/food.png";
 import businessImg from "../../assets/business.png";
+
+interface UserProps {
+    email: string;
+    pass: string;
+}
 
 const SignIn: React.FC = () => {
     const history = useHistory();
-    function handleSubmit() {
-        history.push("/cep");
+    const { signIn } = useAuth();
+    async function handleSubmit(data: UserProps) {
+        if (!!data.email && !!data.pass && (await signIn(data))) {
+            history.push("/cep");
+        } else {
+            alert("Email ou senha incorretos");
+            return;
+        }
     }
 
     return (
@@ -26,20 +39,21 @@ const SignIn: React.FC = () => {
                     </section>
                     <section className="images-container">
                         <img src={businessImg} alt="Lojas Americanas" />
-                        <img src={pictureFoodImg} alt="Lojas Americanas" />
                     </section>
                 </Background>
                 <Content>
                     <div className="logo-img"></div>
-                    <form>
+                    <Form onSubmit={(e) => handleSubmit(e)}>
                         <h1>Faça seu Login</h1>
-                        <input placeholder="E-mail" />
-                        <input type="password" placeholder="Senha" />
-                        <button type="submit" onClick={(e) => handleSubmit()}>
-                            Entrar
-                        </button>
+                        <Input name="email" placeholder="E-mail" />
+                        <Input
+                            name="pass"
+                            type="password"
+                            placeholder="Senha"
+                        />
+                        <button type="submit">Entrar</button>
                         <a href="">Esqueci minha senha</a>
-                    </form>
+                    </Form>
                     <Link to="/signup">
                         <FiLogIn />
                         Criar conta

@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { FiImage } from "react-icons/fi";
 import { Link } from "react-router-dom";
 
 import api from "../../services/api";
+import getDistanceF from "../../utils/getDistance";
 
 import { Container, Content } from "./styles";
 
@@ -14,21 +15,35 @@ interface User {
     document: string;
     image: string;
     is_store: boolean;
+    distance?: number | null;
 }
 
-const ListStores: React.FC = () => {
-    const [stories, setStories] = useState<User[]>([]);
+const ListStores: React.FC = (props: any) => {
+    const cep = props.location.pathname;
+    const textReplace = "/stores/";
+    const [stories, setStories] = useState<User[] | null>([]);
 
-    useEffect(() => {
-        async function getStories(): Promise<void> {
-            const response = await api.get("/users");
-            setStories(response.data.users);
-        }
+    const getStories = useCallback(async () => {
+        const response = await api.get("/users");
+        const storiesBefore: User[] = response.data.users;
 
-        getStories();
+        const promises = storiesBefore.map(async (storie) => {
+            if (storie.is_store) {
+                storie.distance = await getDistanceF(
+                    cep.substring(cep.indexOf("/") + textReplace.length),
+                    storie.address,
+                );
+                return storie;
+            }
+            return null;
+        });
+        const storiesReturn = await Promise.all<User | null>(promises);
+        setStories(storiesReturn as User[]);
     }, [setStories]);
 
-    console.log(stories);
+    useEffect(() => {
+        getStories();
+    }, []);
     return (
         <>
             <Container>
@@ -36,24 +51,27 @@ const ListStores: React.FC = () => {
                     <h1>Estas são as lojas que encontramos em sua região</h1>
                     <section className="stores">
                         <ul>
-                            {stories.map(
-                                (storie) =>
-                                    storie.is_store !== null &&
-                                    storie.is_store && (
-                                        <li key={storie.id}>
-                                            <Link
-                                                to={`/dashboard/${storie.id}`}
-                                            >
-                                                <div className="description-stores">
-                                                    <FiImage size={100} />
-                                                    <h1>{storie.name}</h1>
-                                                    <p>{storie.address}</p>
-                                                    <span>1 KM</span>
-                                                </div>
-                                            </Link>
-                                        </li>
-                                    ),
-                            )}
+                            {stories &&
+                                stories.map(
+                                    (storie) =>
+                                        storie &&
+                                        storie.is_store && (
+                                            <li key={storie.id}>
+                                                <Link
+                                                    to={`/dashboard/${storie.id}`}
+                                                >
+                                                    <div className="description-stores">
+                                                        <FiImage size={100} />
+                                                        <h1>{storie.name}</h1>
+                                                        <p>{storie.address}</p>
+                                                        <span id="teste">
+                                                            {storie.distance} KM
+                                                        </span>
+                                                    </div>
+                                                </Link>
+                                            </li>
+                                        ),
+                                )}
                         </ul>
                     </section>
                 </Content>

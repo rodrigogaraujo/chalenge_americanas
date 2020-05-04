@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FiMenu, FiUser, FiImage, FiThumbsUp, FiX } from "react-icons/fi";
 
 import api from "../../services/api";
+import { useAuth } from "../../hooks/AuthContext";
 import formatValue from "../../utils/formatValue";
 
 import { Header, Container, Content } from "./styles";
@@ -22,20 +23,45 @@ interface Product {
     image: string;
     current_stock: number;
 }
-
 const Dashboard: React.FC = (props: any) => {
+    const { user } = useAuth();
+
     const [isVisibledCart, setIsvisibledCart] = useState(false);
     const [isVisibledProduct, setIsvisibledProduct] = useState(false);
     const [categories, setCategories] = useState<Category[]>([]);
     const [products, setProducts] = useState<Product[]>([]);
+    const [productSafe, setProductSafe] = useState<Product>({} as Product);
+    const [idStore, setIdStore] = useState(0);
 
-    const id = props.match.params.id;
+    const textReplace = "/dashboard/";
+    const id = props.location.pathname;
 
-    function handleOpenProduct(event: any) {
+    function handleOpenProduct(event: any, product: Product) {
         event.preventDefault();
-        isVisibledProduct
-            ? setIsvisibledProduct(false)
-            : setIsvisibledProduct(true);
+        if (isVisibledProduct) {
+            setIsvisibledProduct(false);
+            setProductSafe({} as Product);
+        } else {
+            setIsvisibledProduct(true);
+            setProductSafe(product);
+        }
+    }
+
+    async function handleOpenProductSelect(event: any, product: Product) {
+        event.preventDefault();
+        const data = {
+            client_id: user?.id,
+            store_id: idStore,
+            product_id: product.id,
+            quantity: 1,
+        };
+        const response = await api.post("cart/add", data);
+        if (response.status) {
+            alert("Produto adicionado ao seu carrinho");
+        } else {
+            alert("Houve um erro, tente novamente mais tarde");
+        }
+        setIdStore(id.substring(id.indexOf("/") + textReplace.length));
     }
 
     useEffect(() => {
@@ -48,11 +74,16 @@ const Dashboard: React.FC = (props: any) => {
 
     useEffect(() => {
         async function getProducts(): Promise<void> {
-            const response = await api.get(`/products/owner/${id}`);
+            const response = await api.get(
+                `/products/owner/${id.substring(
+                    id.indexOf("/") + textReplace.length,
+                )}`,
+            );
             setProducts(response.data.products);
+            setIdStore(id.substring(id.indexOf("/") + textReplace.length));
         }
         getProducts();
-    }, [setProducts]);
+    }, [setProducts, setIdStore]);
 
     return (
         <>
@@ -91,30 +122,42 @@ const Dashboard: React.FC = (props: any) => {
                     </section>
                     <section className="products">
                         <ul>
-                            {products.map((product) => (
-                                <li key={product.id}>
-                                    <a
-                                        href=""
-                                        onClick={(e) => handleOpenProduct(e)}
-                                    >
-                                        <div className="description-product">
-                                            <FiImage size={100} />
-                                            <h1>{product.title}</h1>
-                                            <p>{product.current_stock}</p>
-                                            <span>
-                                                {formatValue(product.price)}
-                                            </span>
-                                        </div>
-                                        <div className="approval">
-                                            <FiThumbsUp /> 89%
-                                        </div>
-                                    </a>
-                                </li>
-                            ))}
+                            {products.map(
+                                (product) =>
+                                    product.current_stock > 0 && (
+                                        <li key={product.id}>
+                                            <a
+                                                href=""
+                                                onClick={(e) =>
+                                                    handleOpenProduct(
+                                                        e,
+                                                        product,
+                                                    )
+                                                }
+                                            >
+                                                <div className="description-product">
+                                                    <FiImage size={100} />
+                                                    <h1>{product.title}</h1>
+                                                    <p>
+                                                        {product.current_stock}
+                                                    </p>
+                                                    <span>
+                                                        {formatValue(
+                                                            product.price,
+                                                        )}
+                                                    </span>
+                                                </div>
+                                                <div className="approval">
+                                                    <FiThumbsUp /> 89%
+                                                </div>
+                                            </a>
+                                        </li>
+                                    ),
+                            )}
                         </ul>
                     </section>
                     <section className="show-detail-product">
-                        <a onClick={(e) => handleOpenProduct(e)}>
+                        <a onClick={(e) => handleOpenProduct(e, productSafe)}>
                             <FiX size={30} />
                         </a>
                         <div className="show-detail-product-container">
@@ -125,16 +168,28 @@ const Dashboard: React.FC = (props: any) => {
                                 <div className="approval">
                                     <FiThumbsUp /> 89% (23 pessoas)
                                 </div>
-                                <h1>Caixa de bombom 250g Garoto</h1>
-                                <p>7 disponíveis</p>
-                                <span>R$ 3,29</span>
+                                <h1>{productSafe?.title}</h1>
+                                <p>
+                                    {productSafe.current_stock > 1
+                                        ? productSafe.current_stock +
+                                          " disponíveis"
+                                        : productSafe.current_stock +
+                                          " disponível"}
+                                </p>
+                                <span> {formatValue(productSafe.price)}</span>
 
-                                <button>Adicionar ao carrinho</button>
+                                <button
+                                    onClick={(e) =>
+                                        handleOpenProductSelect(e, productSafe)
+                                    }
+                                >
+                                    Adicionar ao carrinho
+                                </button>
                             </div>
                         </div>
                     </section>
                 </Content>
-                <ShoppingCart isVisible={isVisibledCart} />
+                <ShoppingCart isVisible={isVisibledCart} idStore={idStore} />
             </Container>
         </>
     );

@@ -104,9 +104,10 @@ export const Container = styled.section<ContainerProps>`
                 display: flex;
                 flex-direction: column;
                 width: 100%;
-                overflow: auto;
                 margin: 20px;
                 transition: all 0.3s ease;
+                overflow: auto;
+                max-height: 290px;
                 ul {
                     margin: 10px;
                     li {
@@ -150,19 +151,20 @@ export const Container = styled.section<ContainerProps>`
                         }
                     }
                 }
-                button {
-                    background: #fff;
-                    color: #e60014;
-                    border: none;
-                    margin: 10px;
-                    padding: 10px;
-                    border-radius: 10px;
-                    font-size: 1.3em;
-                    transition: all 0.2s ease;
-                    &:hover {
-                        text-decoration: underline;
-                    }
-                }
+            }
+        }
+        button {
+            background: #fff;
+            color: #e60014;
+            border: none;
+            margin-bottom: 20px;
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 1.3em;
+            transition: all 0.2s ease;
+            &:hover {
+                text-decoration: underline;
             }
         }
     }

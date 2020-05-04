@@ -1,15 +1,44 @@
-import React, { ButtonHTMLAttributes, useState } from "react";
+import React, { ButtonHTMLAttributes, useState, useEffect } from "react";
 import { FiShoppingCart, FiX } from "react-icons/fi";
+
+import api from "../../services/api";
+import { useAuth } from "../../hooks/AuthContext";
 
 import { Container } from "./styles";
 import Button from "../Button";
 
+interface Product {
+    id: number;
+    quantity: number;
+    title: string;
+    price: number;
+}
+
+interface Cart {
+    id: number;
+    quantity: number;
+    title: string;
+    price: number;
+}
+
 interface ContainerProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     isVisible: boolean;
+    idStore: number;
 }
 
 const ShoppingCart: React.FC<ContainerProps> = (props) => {
     const [isButtonOpened, setButtonOpened] = useState(false);
+    const [products, setProducts] = useState<Product[]>([]);
+    const [cart, setCart] = useState<Product[]>([]);
+    const { user } = useAuth();
+
+    useEffect(() => {
+        async function getCartShopping() {
+            const response = await api.get(`cart/${user?.id}`);
+            console.log(response.data.cart);
+        }
+        getCartShopping();
+    }, []);
 
     function handleSubmit(event: any) {
         event.preventDefault();
@@ -41,9 +70,9 @@ const ShoppingCart: React.FC<ContainerProps> = (props) => {
                                 </div>
                             </li>
                         </ul>
-                        <button>Finalizar compra</button>
                     </div>
                 </div>
+                <button>Finalizar compra</button>
                 <div className="shopping-cart-end">
                     <FiShoppingCart size={30} />
                     <h1>Meu carrinho</h1>
