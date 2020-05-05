@@ -24,6 +24,7 @@ Find out if the product you want is in stock at the store near you
 <img src="https://github.com/rodrigogaraujo/challenge_americanas/blob/master/cep.png" width="350"/>
 <img src="https://github.com/rodrigogaraujo/challenge_americanas/blob/master/stores.png" width="350"/>
 <img src="https://github.com/rodrigogaraujo/challenge_americanas/blob/master/store_selected.png" width="350"/>
+<img src="https://github.com/rodrigogaraujo/challenge_americanas/blob/master/gift.gif" width="650"/>
 
 # Contact
 rodrigoaraujo990@gmail.com
