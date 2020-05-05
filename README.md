@@ -20,10 +20,10 @@ Find out if the product you want is in stock at the store near you
 - React geocode
 
 # Preview
-<img src="https://github.com/rodrigogaraujo/projetocapstone/blob/master/login.png" width="350"/>
-<img src="https://github.com/rodrigogaraujo/projetocapstone/blob/master/cep.png" width="350"/>
-<img src="https://github.com/rodrigogaraujo/projetocapstone/blob/master/stores.png" width="350"/>
-<img src="https://github.com/rodrigogaraujo/projetocapstone/blob/master/store_selected.png" width="350"/>
+<img src="https://github.com/rodrigogaraujo/challenge_americanas/blob/master/login.png" width="350"/>
+<img src="https://github.com/rodrigogaraujo/challenge_americanas/blob/master/cep.png" width="350"/>
+<img src="https://github.com/rodrigogaraujo/challenge_americanas/blob/master/stores.png" width="350"/>
+<img src="https://github.com/rodrigogaraujo/challenge_americanas/blob/master/store_selected.png" width="350"/>
 
 # Contact
 rodrigoaraujo990@gmail.com
